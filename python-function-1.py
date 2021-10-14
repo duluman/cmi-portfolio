@@ -112,7 +112,20 @@ print(g1())
 registers = []
 def h(f):
     def w():
+        print(f"h: {f() + 2}")
         return f() + 2
+    return w
+
+def g(f):
+    def w():
+        print(f"g: {f() + 5}")
+        return f() + 5
+    return w
+
+def i(f):
+    def w():
+        print(f"i: {f() + 10}")
+        return f() + 10
     return w
 
 @h
@@ -128,10 +141,10 @@ def v():
     return 2**6
 
 
-print("decorators")
-print(t())
-print(v())
-print(u())
+# print("decorators")
+# print(t())
+# print(v())
+# print(u())
 
 def decorator_with_params():
     def decorator(function):
@@ -145,4 +158,14 @@ def decorator_with_params():
 def x(a):
     return a ** 10
 
-print(x(2))
+# print(x(2))
+
+
+
+@h
+@g
+@i
+def f():
+    return 10
+
+print(f())
