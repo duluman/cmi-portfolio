@@ -1,0 +1,30 @@
+Am o aplicatie de ecommerce. In aplicatie am utilizatori. utilizatorii au nume, email si parola. 
+Pot sa sterg sau sa adaug utilizatori noi. 
+
+De asemenea, in aplicatia mea am produse si lucrez foarte mult cu liste de produse. Produsele sunt diverse, ele putant 
+avea diferite tipuri.
+
+In functi de tipul produsului as putea avea urmatoarele informatii pt un produs. 
+
+Flori
+speciei
+pret
+data aducerii in stoc
+
+Agrafe
+tip
+pret
+numar de bucati per cutie
+
+Ca si utilizator eu pot sa adaug o lista de produse si in lista de produse sa adaug produse noi sau sa sterg din cele existente.
+
+utilizator
+- UserBase
+
+produs
+- ProductBase
+- ProductFlower
+- ProductPaperClip
+
+liste de produse 
+- ProductList
