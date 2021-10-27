@@ -1,3 +1,6 @@
+import json
+
+
 class Product:
     repository = None
 
@@ -18,9 +21,12 @@ class Product:
 
     def get(self):
         result = self.repository.get_by_field_value("prod_id", self.prod_id)
-        self.name = result["name"]
-        self.description = result["description"]
-        self.price = result["price"]
+        if result:
+            result = result[0]
+            self.name = result["name"]
+            self.description = result["description"]
+            self.price = result["price"]
+
 
     def edit(self, name=None, description=None, price=None):
         if name is not None:
@@ -53,9 +59,13 @@ class AllProducts:
 
     def get_all(self):
         raw_results = self.repository.get_all()
-        for result in raw_results:
-            product = Product(result["prod_id"], result["name"], result["description"], result["price"])
-            self.products.append(product)
+        if raw_results:
+            for result in raw_results:
+                product = Product(result["prod_id"],
+                                  result["name"],
+                                  result["description"],
+                                  result["price"])
+                self.products.append(product)
 
     def to_json(self):
         products_json = [product.to_json() for product in self.products]

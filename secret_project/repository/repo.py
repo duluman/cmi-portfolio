@@ -1,6 +1,4 @@
 import json
-import random
-from dataclasses import field
 from typing import List, Union
 
 from bson import json_util
@@ -8,7 +6,9 @@ from pymongo import MongoClient
 
 
 class MongoRepository:
-    def __init__(self, conn_string: str = None, db_name: str = "cmiswep", collection_name: str = "sample"):
+    def __init__(self, conn_string: str = None,
+                 db_name: str = "cmiswep",
+                 collection_name: str = "products"):
         self.__client = MongoClient(conn_string)
         self.__database_name = db_name
         self.__collection_name = collection_name
@@ -24,8 +24,9 @@ class MongoRepository:
         if projection is None:
             projection = {"_id": 0}
 
-        db_result = list(self.__client[self.__database_name][self.__collection_name].find(
-            search_query, projection))
+        db_result = list(
+            self.__client[self.__database_name][self.__collection_name].find(
+                search_query, projection))
 
         response = json.loads(json_util.dumps(db_result))
 
@@ -46,17 +47,12 @@ class MongoRepository:
 
         return results_dict
 
-    def insert_one(self, document: dict = None, validators: List[callable] = field(default_factory=list)):
-        for validator in validators:
-            document = validator(document)
+    def insert_one(self, document: dict = None):
 
         self.__client[self.__database_name][self.__collection_name].insert_one(
             document)
 
-    def insert_many(self, documents: List[dict] = field(default_factory=list), validators: List[callable] = field(default_factory=list)):
-        for document in documents:
-            for validator in validators:
-                document = validator(document)
+    def insert_many(self, documents):
 
         self.__client[self.__database_name][self.__collection_name].insert_many(
             documents)
