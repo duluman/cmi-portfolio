@@ -1,0 +1,20 @@
+Un REST API pentru un microserviciu care se ocupa cu managementul unei liste de produse. 
+
+- REST API 
+- DB 
+- CRUD 
+- OOP
+
+1. Create product
+2. Edit product
+3. Delete product 
+4. Get all products 
+5. Get product by id 
+
+6. Create product list 
+7. Edit product list 
+8. Delete product list 
+9. Get product lists (all)
+10. Get product list by id 
+11. Add products to a product list 
+12. Remove products from a product list
