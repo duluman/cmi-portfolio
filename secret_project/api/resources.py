@@ -29,12 +29,18 @@ class ProductResource(Resource):
             product = Product()
             product.create(prod_id=body["prod_id"], name=body["name"],
                            description=body["description"], price=body["price"])
-            return Response(status=200, content_type="application/json")
+            response = Response(status=200, content_type="application/json")
+        except ValueError as ve:
+            error = {
+                'error': str(ve)
+            }
+            response = Response(response=json.dumps(error), status=400, content_type="application/json")
         except Exception as e:
             error = {
                 'error': str(e)
             }
-            return Response(error, status=500, content_type="application/json")
+            response = Response(response=json.dumps(error), status=500, content_type="application/json")
+        return response
 
     def put(self):
         pass

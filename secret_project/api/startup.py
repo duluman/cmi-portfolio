@@ -1,6 +1,6 @@
 import os
+import json
 
-from secret_project.models.product import Product, AllProducts
 from secret_project.repository.repo import MongoRepository
 
 connection_string = os.environ["MONGO_CONN_STRING"]
@@ -11,8 +11,12 @@ product_repository = MongoRepository(conn_string=connection_string,
                                      db_name=db_name,
                                      collection_name=collection_name)
 
-product = Product()
-product.repository = product_repository
+# sample interaction with json configs
+with open("config.json", "r") as config_file:
+    config = json.load(config_file)
 
-all_products = AllProducts()
-all_products.repository = product_repository
+print(f"Config info {config['database']}")
+
+config["database"]["name"] = "sample 2"
+with open("config.json", "w") as config_file:
+    json.dump(config, config_file)
