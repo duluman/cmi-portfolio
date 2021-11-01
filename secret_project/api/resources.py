@@ -43,7 +43,54 @@ class ProductResource(Resource):
         return response
 
     def put(self):
-        pass
+        body = request.json
+        prod_id = body.get("prod_id", None)
+        if prod_id is None:
+            error = {
+                "error": "Invalid id provided."
+            }
+            return Response(response=json.dumps(error), status=400, content_type="application/json")
+        data = body.get("data", None)
+        if data is None or data == {}:
+            error = {
+                "error": "Invalid product data provided."
+            }
+            return Response(response=json.dumps(error), status=400, content_type="application/json")
+        try:
+            product = Product(prod_id=prod_id)
+            product.edit(name=data.get("name", None),
+                         description=data.get("description", None),
+                         price=data.get("price", None))
+            response = Response(status=200, content_type="application/json")
+        except ValueError as ve:
+            error = {
+                "error": str(ve)
+            }
+            response = Response(response=json.dumps(error), status=400, content_type="application/json")
+        except Exception as e:
+            error = {
+                "error": str(e)
+            }
+            response = Response(response=json.dumps(error), status=500, content_type="application/json")
+        return response
 
     def delete(self):
-        pass
+        body = request.json
+        prod_ids = body.get("prod_ids", None)
+        if prod_ids is None:
+            error = {
+                "error": "Missing product ids."
+            }
+            response = Response(response=json.dumps(error), status=400, content_type="application/json")
+        else:
+            try:
+                for prod_id in prod_ids:
+                    product = Product(prod_id=prod_id)
+                    product.delete()
+                response = Response(status=200, content_type="application/json")
+            except Exception as e:
+                error = {
+                    'error': str(e)
+                }
+                response = Response(response=json.dumps(error), status=500, content_type="application/json")
+        return response

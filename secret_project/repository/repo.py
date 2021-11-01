@@ -59,11 +59,23 @@ class MongoRepository:
 
     def update_one_by_field(self, document: dict = None, field: str = None):
         search_query = {
-            field: document[field]
+            field: {
+                "$eq": document[field]
+            }
         }
+        document_notnull = {key: value for key, value in document.items() if value is not None}
+        update_doc = {
+            "$set": document_notnull
+        }
+        print(search_query)
+        print(update_doc)
+        # document_notnull = {}
+        # for key, value in document.items():
+        #     if value is not None:
+        #         document_notnull[key] = value
         db = self.__client[self.__database_name]
         col = db[self.__collection_name]
-        col.update_one(search_query, document)
+        col.update_one(search_query, update_doc)
 
     def delete_one(self, id: str):
         db = self.__client[self.__database_name]

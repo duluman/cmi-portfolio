@@ -24,11 +24,7 @@ class Product:
         self.repository.insert_one(product_json)
 
     def get(self):
-        projection = {
-            'prod_id': 1,
-            'description': 1
-        }
-        result = self.repository.get_by_field_value("prod_id", self.prod_id, projection=projection)
+        result = self.repository.get_by_field_value("prod_id", self.prod_id)
         if result:
             result = result[0]
             self.name = result.get("name", None)
@@ -42,6 +38,8 @@ class Product:
             self.description = description
         if price is not None and price >= 0: 
             self.price = price
+        elif price is not None and price < 0:
+            raise ValueError("Invalid price. Please provide a price >= 0.")
         product_json = self.to_json()
         self.repository.update_one_by_field(product_json, "prod_id")
 
