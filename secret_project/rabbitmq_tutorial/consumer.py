@@ -10,8 +10,8 @@ def process_message(ch, method, properties, body):
 
 
 # create a connection to RabbitMq
-credentials = pika.PlainCredentials(username='dzcrqstc', password='RI_PflutYKlPTccvbMbkip6k7n22TxvB')
-params = pika.ConnectionParameters(host='baboon-01.rmq.cloudamqp.com', port=5672, virtual_host='dzcrqstc', credentials=credentials)
+credentials = pika.PlainCredentials(username='', password='')
+params = pika.ConnectionParameters(host='', port=5672, virtual_host='', credentials=credentials)
 conn = pika.BlockingConnection(params)
 
 # start a channel
