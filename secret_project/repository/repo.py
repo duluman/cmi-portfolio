@@ -67,8 +67,6 @@ class MongoRepository:
         update_doc = {
             "$set": document_notnull
         }
-        print(search_query)
-        print(update_doc)
         # document_notnull = {}
         # for key, value in document.items():
         #     if value is not None:

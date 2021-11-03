@@ -11,9 +11,9 @@ AllProducts.repository = product_repository
 
 
 class ProductResource(Resource):
-    def get(self, id=None):
-        if id is not None:
-            product = Product(prod_id=id)
+    def get(self, prod_id=None):
+        if prod_id is not None:
+            product = Product(prod_id=prod_id)
             product.get()
             return Response(json.dumps(product.to_json()), status=200,
                             content_type="application/json")
