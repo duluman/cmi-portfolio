@@ -7,10 +7,9 @@ class AverageReadingsReportBuilder(ReportBuilderBase):
 
     chunk = 100
 
-    def __init__(self, producer=None):
+    def __init__(self):
         super().__init__()
         self.__conn = None
-        self.__producer = producer
 
     def connect(self):
         self.__conn = sqlite3.connect(self.DATABASE_NAME)
@@ -59,8 +58,8 @@ class AverageReadingsReportBuilder(ReportBuilderBase):
     def compute_report(self):
         try:
             raw_data = self.get_data()
-            # process this and save as csv
+            # TODO: process this and save as csv
             message = self.generate_success(filename="average-sensor-reading-report.csv")
         except Exception as e:
             message = self.generate_error(str(e))
-        self.__producer.publish(body=message)
+        return message
