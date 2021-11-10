@@ -4,10 +4,9 @@ from secret_project.rabbitmq_tutorial.ConsumerBase import ConsumerBase
 
 
 def process_message(ch, method, properties, body):
-    message_type = properties.type
-    if message_type == "MessageType1":
+    if properties.type == "MessageType2":
         ch.basic_ack(delivery_tag=method.delivery_tag)
-        print(f"Consumer #1. This is a message of type {message_type}. {body}")
+        print(f"Consumer #2. This is a message of type {properties.type}. {body}")
     else:
         ch.basic_nack(delivery_tag=method.delivery_tag, requeue=True)
 
