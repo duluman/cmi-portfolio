@@ -56,9 +56,11 @@ class Animal(abc.ABC):
     @classmethod
     def all_implemented(cls):
         if len(cls.__abstractmethods__):
-            return True
-        else:
+            print(cls.__abstractmethods__)
             return False
+        else:
+            print(cls.__abstractmethods__)
+            return True
 
 
 """
@@ -133,6 +135,4 @@ class Dog(Animal):
 
 
 if __name__ == "__main__":
-    dog1 = Dog('brown', 10, Cat)
-    print(dog1.sound())
-
+    print(Cat.all_implemented())
