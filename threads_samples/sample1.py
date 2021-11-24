@@ -28,36 +28,60 @@ def process_message2(ch, method, properties, body):
         ch.basic_nack(delivery_tag=method.delivery_tag, requeue=True)
 
 
+def send_mesages():
+    for i in range(10):
+        # create message body
+        body = {
+            'name': 'my name',
+            'location': 'loc',
+            'message_num': f"Message number #{i}. This is a very important message."
+        }
+        body = json.dumps(body).encode('gbk')
+
+        # set message type, timestamp, priority
+        message_type = message_types[i % 2]
+        timestamp = int(datetime.timestamp(datetime.fromisoformat(datetime.utcnow().isoformat())))
+        priority = priorities[i % 2]
+
+        # create message properties
+        properties = BasicProperties(type=message_type, timestamp=timestamp, priority=priority)
+
+        # send message
+        channel.basic_publish(exchange='amq.direct',
+                              routing_key='sewp-key',
+                              properties=properties,
+                              body=body)
+
+
 # create a connection to RabbitMq
-username = "dzcrqstc" # os.environ['CMI_SEWP_RABBIT_USERNAME']
-password = "RI_PflutYKlPTccvbMbkip6k7n22TxvB" # os.environ['CMI_SEWP_RABBIT_PASSWORD']
-host = "baboon-01.rmq.cloudamqp.com" # os.environ['CMI_SEWP_RABBIT_HOST']
-virtual_host = "dzcrqstc" # os.environ['CMI_SEWP_RABBIT_VHOST']
+username = os.environ['CMI_SEWP_RABBIT_USERNAME']
+password = os.environ['CMI_SEWP_RABBIT_PASSWORD']
+host = os.environ['CMI_SEWP_RABBIT_HOST']
+virtual_host = os.environ['CMI_SEWP_RABBIT_VHOST']
 
 # === Consumer === #
-consumer = ConsumerBase(username, password, host, virtual_host, 'sewp')
-consumer.callback = process_message
+consumer1 = ConsumerBase(username, password, host, virtual_host, 'sewp')
+consumer1.callback = process_message
 
 # TODO: 1. run consumer.consume() on a separate thread. Hint: Fire & forget
-thread = threading.Thread(target=consumer.consume, name="RabbitMQ Consumer 0")
-thread.start()
+# thread = threading.Thread(target=consumer1.consume, name="RabbitMQ Consumer 0")
+# thread.start()
 
 # TODO: 4. run 5 consumers on 5 different threads. Hint: Fire & forget
 threads = []
+processors = [process_message, process_message2]
 for i in range(5):
     consumer = ConsumerBase(username, password, host, virtual_host, 'sewp')
-    consumer.callback = process_message
+    consumer.callback = processors[i % 2]
     t = threading.Thread(target=consumer.consume, name=f"RabbitMQ Consumer {i+1}")
     threads.append(t)
 
-for t in threads:
-    t.start()
+for ti in threads:
+    ti.start()
 
 # === Producer === #
 # start a channel
-# credentials = PlainCredentials(username=username, password=password)
-# params = ConnectionParameters(host=host, port=5672, virtual_host=virtual_host, credentials=credentials)
-conn = consumer.get_connection()
+conn = consumer1.get_connection()
 channel = conn.channel()
 
 # declare a queue in case it doesn't exist
@@ -67,29 +91,9 @@ channel.queue_declare(queue='sewp')
 message_types = ["MessageType1", "MessageType2"]
 priorities = [10, 1]
 
-for i in range(100000):
-    # create message body
-    body = {
-        'name': 'my name',
-        'location': 'loc',
-        'message_num': f"Message number #{i}. This is a very important message."
-    }
-    body = json.dumps(body).encode('gbk')
+t = threading.Thread(target=send_mesages)
+t.start()
+t.join()
 
-    # set message type, timestamp, priority
-    message_type = message_types[i % 2]
-    timestamp = int(datetime.timestamp(datetime.fromisoformat(datetime.utcnow().isoformat())))
-    priority = priorities[i % 2]
-
-    # create message properties 
-    properties = BasicProperties(type=message_type, timestamp=timestamp, priority=priority)
-    
-    # send message 
-    channel.basic_publish(exchange='amq.direct',
-                          routing_key='sewp-key',
-                          properties=properties,
-                          body=body)
-
-    # TODO: 2. send messages on a separate thread (1 thread per message). Hint: Fire & forget
-
-    # TODO: 3. send messages on a separate thread (1 for all messages)
+for ti in threads:
+    ti.join()
