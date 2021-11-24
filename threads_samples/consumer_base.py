@@ -7,8 +7,8 @@ class ConsumerBase:
     def __init__(self, username=None, password=None, host=None, vhost=None, queue=None):
         # create a connection to RabbitMq
         credentials = PlainCredentials(username=username, password=password)
-        params = ConnectionParameters(host=host, port=5672, virtual_host=vhost, credentials=credentials)
-        self.__conn = BlockingConnection(params)
+        self.__params = ConnectionParameters(host=host, port=5672, virtual_host=vhost, credentials=credentials)
+        self.__conn = BlockingConnection(self.__params)
         self.__queue = queue
         self.callback = None
 
@@ -18,4 +18,4 @@ class ConsumerBase:
         channel.start_consuming()
 
     def get_connection(self):
-        return self.__conn
+        return BlockingConnection(self.__params)
