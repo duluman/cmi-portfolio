@@ -25,9 +25,9 @@ virtual_host = os.environ['CMI_SEWP_RABBIT_VHOST']
 consumer = ConsumerBase(username, password, host, virtual_host, 'sewp')
 consumer.callback = process_message
 
-# TODO: 1. run consumer.consume() on a separate thread
+# TODO: 1. run consumer.consume() on a separate thread. Hint: Fire & forget
 
-# TODO: 4. run 5 consumers on 5 different threads
+# TODO: 4. run 5 consumers on 5 different threads. Hint: Fire & forget
 
 # === Producer === #
 # start a channel
@@ -64,6 +64,6 @@ for i in range(100):
                           properties=properties,
                           body=body)
 
-    # TODO: 2. send messages on a separate thread (1 thread per message)
+    # TODO: 2. send messages on a separate thread (1 thread per message). Hint: Fire & forget
 
     # TODO: 3. send messages on a separate thread (1 for all messages)
