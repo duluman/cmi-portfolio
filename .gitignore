@@ -6,3 +6,6 @@ __pycache__/
 *.xmi
 *.idea/
 .idea/
+
+# personal
+/Cristian
