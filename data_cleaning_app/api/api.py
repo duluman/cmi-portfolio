@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_restful import Api
 
@@ -6,7 +8,8 @@ from data_cleaning_app.api.resources.uploader import Uploader
 app = Flask(__name__)
 api = Api(app)
 
-Uploader.set_database_file('/Users/luchicila/work/cmi-portfolio/data_cleaning_app/database/datastore.db')
+dbfile = os.environ.get("DB_FILE")
+Uploader.set_database_file(dbfile)
 
 api.add_resource(Uploader, '/api/v1/upload')
 
