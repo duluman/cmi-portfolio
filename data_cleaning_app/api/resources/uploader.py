@@ -4,7 +4,7 @@ from flask_restful import Resource, request
 from flask import Response
 
 from data_cleaning_app.csvparser import CsvParser
-from data_cleaning_app.repository import connect, create_table
+from data_cleaning_app.repository import connect, create_table, insert_data
 
 
 class Uploader(Resource):
@@ -30,8 +30,17 @@ class Uploader(Resource):
             }
             return Response(json.dumps(err), status=400, content_type='application/json')
 
-        csv_parser = CsvParser(data)
-        columns = csv_parser.to_dataframe().get_columns().get_column_types()
-        conn = connect(self.DB_FILE)
-        create_table(conn, table_name, columns)
-        conn.close()
+        try:
+            csv_parser = CsvParser(data)
+            columns = csv_parser.to_dataframe().get_columns().get_column_types()
+            conn = connect(self.DB_FILE)
+            create_table(conn, table_name, columns)
+            data = csv_parser.convert_dataframe_to_sqlite_data()
+            insert_data(conn, data, table_name, columns)
+            conn.close()
+            return Response(status=200, content_type='application/json')
+        except Exception as e:
+            err = {
+                'error': f'Something went wrong. Error: {e}'
+            }
+            return Response(json.dumps(err), status=500, content_type='application/json')

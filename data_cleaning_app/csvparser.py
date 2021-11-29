@@ -22,7 +22,7 @@ class CsvParser:
     def to_dataframe(self):
         if self.data_string is None:
             print("--Failed to convert string to dataframe. Missing data string.")
-            return None
+            raise Exception("Missing data string.")
 
         data = StringIO(self.data_string)
         self.dataframe = pd.read_csv(data, sep=",")
@@ -30,8 +30,8 @@ class CsvParser:
 
     def get_columns(self):
         if self.dataframe is None:
-            print("--Failed to extract columns. Missing data frame.")
-            return None
+            print("--Failed to extract columns. Missing dataframe.")
+            raise Exception("Missing dataframe.")
 
         self.data_columns = list(self.dataframe.columns)
         return self
@@ -39,7 +39,7 @@ class CsvParser:
     def get_column_types(self):
         if self.data_columns is None:
             print("--Failed to extract columns type. Missing data columns.")
-            return None
+            raise Exception("Missing data columns.")
 
         for column in self.data_columns:
             column_type = str(self.dataframe.dtypes[column])
@@ -51,21 +51,37 @@ class CsvParser:
         return self.data_columns_type
 
     def convert_dataframe_to_sqlite_data(self):
-        # convert self.dataframe into a list of lists
-        # convert each column into the appropriate SQLite data type
-        # return converted data as a list of lists
-        pass
+        data = []
+        for row in self.dataframe.iterrows():
+            converted_row = []
+            for key in self.data_columns:
+                if pd.isna(row[1][key]):
+                    converted_row.append(None)
+                elif self.data_columns_type[key] == 'INTEGER':
+                    converted_row.append(int(row[1][key]))
+                elif self.data_columns_type[key] == 'TEXT' and type(row[1][key]) == str:
+                    converted_row.append(row[1][key])
+                elif self.data_columns_type[key] == 'TEXT' and type(row[1][key]) != str:
+                    converted_row.append(str(row[1][key]))
+                elif self.data_columns_type[key] == 'REAL':
+                    converted_row.append(float(row[1][key]))
+
+            data.append(converted_row)
+        return data
 
 
 if __name__ == "__main__":
-    sample_csv = """col1,col2,col3
-    1,4.4,99
-    2,,200
-    3,4.7,'65'
-    4,3.2,'st'
+    sample_csv = """col1,col2,col3,col4
+    1,4.4,99,True
+    2,,200,False
+    3,4.7,'65',True
+    4,3.2,'st',True
     """
 
     parser = CsvParser(sample_csv)
 
     column_types = parser.to_dataframe().get_columns().get_column_types()
     print(column_types)
+
+    data = parser.convert_dataframe_to_sqlite_data()
+    print(data)

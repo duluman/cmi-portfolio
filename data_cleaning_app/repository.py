@@ -7,7 +7,7 @@ def connect(dbfile):
         return conn
     except Exception as e:
         print(f"--Failed to connect to the database {dbfile}. Error: {e}.")
-        return None
+        raise e
 
 
 def create_table(conn, table_name, columns):
@@ -31,22 +31,34 @@ def create_table(conn, table_name, columns):
         conn.commit()
     except Exception as e:
         print(f"--Failed to create table {table_name}. Error: {e}.")
+        raise e
 
 
 def insert_data(conn, data, table_name, columns):
     """
-    1) INSERT INTO {table_name} (col1, col2, ...) VALUES (?, ?, ...)
+    INSERT INTO {table_name} (col1, col2, ...) VALUES (?, ?, ...)
     columns = {
         column_name: column_type
     }
-    data = pandas.DataFrame()
+    data = List[List]
     """
-    # generate query to insert data (1)
+    columns_part = ""
+    for key in columns.keys():
+        columns_part += f"{key},"
+    columns_part = columns_part[:-1]
 
-    # get cursor
+    values_part = ""
+    for i in range(len(columns.keys())):
+        values_part += "?,"
+    values_part = values_part[:-1]
 
-    # run query
-    # cursor.execute(query, data)
+    query = f"INSERT INTO {table_name} ({columns_part}) VALUES ({values_part})"
 
-    # commit changes
-    # conn.commit()
+    try:
+        cursor = conn.cursor()
+        for row in data:
+            cursor.execute(query, row)
+        conn.commit()
+    except Exception as e:
+        print(f"--Failed to create table {table_name}. Error: {e}.")
+        raise e
