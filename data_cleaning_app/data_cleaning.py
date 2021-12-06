@@ -35,7 +35,7 @@ class DataCleaner:
             data = get_data(self.__conn, self.__table_name)
 
         # find row ids for rows that contain 'null' or None
-        row_ids_with_nulls = [data[i][0] for i in range(len(data)) if None in data[i] or 'null' in data[i]]
+        row_ids_with_nulls = [data[i][0] for i in range(len(data)) if None in data[i] or "'null'" in data[i]]
         for row_id in row_ids_with_nulls:
             if self.__conn is not None and self.__table_name is not None:
                 delete_data(self.__conn, self.__table_name, column_value=row_id)

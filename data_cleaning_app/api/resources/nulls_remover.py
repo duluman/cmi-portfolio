@@ -3,7 +3,7 @@ import json
 from flask import Response
 from flask_restful import Resource
 
-from data_cleaning_app.business_logic import DataCleaner
+from data_cleaning_app.data_cleaning import DataCleaner
 from data_cleaning_app.repository import connect
 
 
