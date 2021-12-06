@@ -20,7 +20,6 @@ class DataCleaner:
 
         # find duplicated rows
         duplicated_rows = {x for x in data_without_ids if data_without_ids.count(x) > 1}
-        duplicated_data_row_ids = []
         for row in duplicated_rows:
             row_ids = [data[idx][0] for idx in range(len(data_without_ids)) if data_without_ids[idx] == row]
             # delete duplicated rows
@@ -32,7 +31,17 @@ class DataCleaner:
                     continue
 
     def remove_rows_with_nulls(self, data=None):
-        pass
+        if data is None:
+            data = get_data(self.__conn, self.__table_name)
+
+        # find row ids for rows that contain 'null' or None
+        row_ids_with_nulls = [data[i][0] for i in range(len(data)) if None in data[i] or 'null' in data[i]]
+        for row_id in row_ids_with_nulls:
+            if self.__conn is not None and self.__table_name is not None:
+                delete_data(self.__conn, self.__table_name, column_value=row_id)
+            else:
+                print("--Failed to delete row. Missing connection or table_name.")
+                continue
 
 
 if __name__ == "__main__":
@@ -43,7 +52,10 @@ if __name__ == "__main__":
         (3, 199, 204, 'b', 'nsa@sd'),
         (4, 199, 204, 'a', 'nsa@sd'),
         (5, 199, 204, 'b', 'nsa@sd'),
-        (6, 199, 204, 'a', 'nsa@sd'),
-        (7, 199, 204, 'b', 'nsa@sd')
+        (6, 199, 204, 'null', 'nsa@sd'),
+        (7, 199, 204, 'b', 'nsa@sd'),
+        (8, 199, None, 'a', 'nsa@sd'),
+        (9, None, 204, 'b', 'nsa@sd')
     ]
-    dc.remove_duplicates(data)
+    # dc.remove_duplicates(data)
+    dc.remove_rows_with_nulls(data)
