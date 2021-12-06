@@ -62,3 +62,48 @@ def insert_data(conn, data, table_name, columns):
     except Exception as e:
         print(f"--Failed to create table {table_name}. Error: {e}.")
         raise e
+
+
+def get_data(conn, table_name, columns=None):
+    """
+    if columns == None: SELECT * FROM table_name
+    if columns != None: SELECT column1, column2, ..., columnN FROM table_name
+    """
+    if columns is None:
+        selected_columns = "*"
+    else:
+        selected_columns = ",".join(columns)
+    query = f"select {selected_columns} from {table_name}"
+
+    try:
+        cursor = conn.cursor()
+        data = list(cursor.execute(query))
+        return data
+    except Exception as e:
+        print(f"--Failed to get data from {table_name}. Error: {e}.")
+        raise e
+
+
+def delete_data(conn, table_name, column_name=None, column_value=None):
+    """
+    if column_name == None: DELETE FROM table_name where <table_name>_id=value
+    if column_name != None: DELETE FROM table_name where column_name=value
+    """
+    if column_value is None:
+        print("--Failed to delete data. Column value is none.")
+        raise Exception("--Failed to delete data. Column value is none.")
+
+    if column_name is None:
+        column = f"{table_name}_id"
+    else:
+        column = column_name
+    query = f"DELETE FROM {table_name} WHERE {column}={column_value}"
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute(query)
+        conn.commit()
+    except Exception as e:
+        print(f"--Failed to delete data for {column}={column_value}. Error: {e}.")
+        raise e
+    
