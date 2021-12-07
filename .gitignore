@@ -12,3 +12,4 @@ __pycache__/
 *.png
 nottingham/
 *.db
+.DS_Store/
