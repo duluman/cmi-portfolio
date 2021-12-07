@@ -13,3 +13,4 @@ __pycache__/
 nottingham/
 *.db
 .DS_Store/
+*/.DS_Store
