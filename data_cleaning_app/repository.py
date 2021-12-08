@@ -35,6 +35,7 @@ def create_table(conn, table_name, columns):
 
 
 def insert_data(conn, data, table_name, columns):
+    # TODO: investigate why strings are inserted as "'value'"
     """
     INSERT INTO {table_name} (col1, col2, ...) VALUES (?, ?, ...)
     columns = {
@@ -106,4 +107,46 @@ def delete_data(conn, table_name, column_name=None, column_value=None):
     except Exception as e:
         print(f"--Failed to delete data for {column}={column_value}. Error: {e}.")
         raise e
-    
+
+
+def replace_null_by_column(conn, cursor, table_name, columns, value):
+    for column in columns:
+        try:
+            # TODO: investigate why we cannot replace with strings.
+            query = f"UPDATE {table_name} SET {column}={value} WHERE {column} IS NULL;"
+            cursor.execute(query, value)
+            conn.commit()
+        except Exception as e:
+            print(f"--Failed to replace NULL values for {column}. Error: {e}.")
+
+
+def replace(conn, table_name, value, columns=None):
+    """
+    UPDATE [table]
+    SET [column]=0
+    WHERE [column] IS NULL;
+
+    PRAGMA table_info(sample_table_1);
+    """
+    cursor = conn.cursor()
+    # if columns:
+    #     replace_null_by_column(conn, cursor, table_name, columns, value)
+    # else:
+    #     query = f"PRAGMA table_info({table_name});"
+    #     column_info = cursor.execute(query)
+    #     columns = [c[0] for c in column_info]
+    #     replace_null_by_column(conn, cursor, table_name, columns, value)
+    if columns is None:
+        query = f"PRAGMA table_info({table_name});"
+        column_info = cursor.execute(query)
+        columns = [c[1] for c in column_info]
+
+    replace_null_by_column(conn, cursor, table_name, columns, value)
+
+
+if __name__ == "__main__":
+    import os
+    dbfile = os.environ.get("DB_FILE")
+    conn = connect(dbfile)
+    replace(conn, "sample_table_1", "10", columns=["col1"])
+    replace(conn, "sample_table_2", "20")

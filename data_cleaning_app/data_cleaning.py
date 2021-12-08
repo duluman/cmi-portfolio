@@ -1,4 +1,4 @@
-from data_cleaning_app.repository import get_data, delete_data
+from data_cleaning_app.repository import get_data, delete_data, replace
 
 
 class DataCleaner:
@@ -42,6 +42,10 @@ class DataCleaner:
             else:
                 print("--Failed to delete row. Missing connection or table_name.")
                 continue
+
+    def replace_nulls(self, value, columns=None):
+        if self.__conn is not None and self.__table_name is not None:
+            replace(self.__conn, self.__table_name, value, columns=columns)
 
 
 if __name__ == "__main__":
