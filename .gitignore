@@ -6,6 +6,17 @@ __pycache__/
 *.xmi
 *.idea/
 .idea/
+<<<<<<< HEAD
 
 # personal
 /Cristian
+=======
+*.gif
+*.jpeg
+*.jpg
+*.png
+nottingham/
+*.db
+.DS_Store/
+*/.DS_Store
+>>>>>>> ee5f995dee1d49d5d19289da4618b4a2c5a155a9
