@@ -144,6 +144,32 @@ def replace(conn, table_name, value, columns=None):
     replace_null_by_column(conn, cursor, table_name, columns, value)
 
 
+def get_data_for_desired_columns(conn, table_name, columns):
+    if columns is None:
+        query = f"SELECT * FROM {table_name}"
+    else:
+        columns = ",".join(columns)
+        query = f"SELECT {columns} from {table_name}"
+
+    cursor = conn.cursor()
+    data = cursor.execute(query)
+    return list(data)
+
+
+def get_mean_for_desired_columns(conn, table_name, columns):
+    cursor = conn.cursor()
+    if columns is None:
+        query = f"SELECT AVG(*) FROM {table_name}"
+        means = list(cursor.execute(query))
+    else:
+        means = []
+        for column in columns:
+            query = f"SELECT AVG({column}) FROM {table_name}"
+            m = list(cursor.execute(query))[0][0]
+            means.append(m)
+    return means
+
+
 if __name__ == "__main__":
     import os
     dbfile = os.environ.get("DB_FILE")
