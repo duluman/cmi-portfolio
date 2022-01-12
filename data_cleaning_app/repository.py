@@ -1,3 +1,4 @@
+import json
 import sqlite3
 
 
@@ -168,6 +169,30 @@ def get_mean_for_desired_columns(conn, table_name, columns):
             m = list(cursor.execute(query))[0][0]
             means.append(m)
     return means
+
+
+def store_task_result(conn, task_id, result):
+    query = """INSERT INTO task_results (task_id, result) VALUES (?, ?)"""
+    cursor = conn.cursor()
+    cursor.execute(query, [task_id, json.dumps(result)])
+    conn.commit()
+
+
+def get_task_result(conn, task_id):
+    query = f"""SELECT result FROM task_results WHERE task_id='{task_id}'"""
+    cursor = conn.cursor()
+    result = cursor.execute(query)
+    result = list(result)
+    if not len(result):
+        return {
+            "task_id": task_id,
+            "status": "NOT READY"
+        }
+
+    return {
+        "task_id": task_id,
+        "data": json.loads(result[0][0])
+    }
 
 
 if __name__ == "__main__":
